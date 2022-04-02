@@ -1,24 +1,20 @@
 CC=gcc
-CFLAGS=-Wall -g
-
-test: test_testlib clean
+CFLAGS=-Wall -g -Iinclude
+BUILDDIR=build
+BINDIR=${BUILDDIR}/bin
+OBJDIR=${BUILDDIR}/obj
+TESTDIR=test
 
 testlib.o:
-	${CC} ${CFLAGS} -c testlib.c -o testlib.o
+	${CC} ${CFLAGS} -c src/testlib.c -o ${OBJDIR}/testlib.o
 
-test_testlib.o: testlib.o
-	${CC} ${CFLAGS} -c test_testlib.c -o test_testlib.o
+test_testlib.o:
+	${CC} ${CFLAGS} -c ${TESTDIR}/test_testlib.c -o ${OBJDIR}/test_testlib.o
 
 test_testlib: testlib.o test_testlib.o
-	${CC} ${CFLAGS} testlib.o test_testlib.o -o test_testlib.exe
+	${CC} ${CFLAGS} ${OBJDIR}/*.o -o ${BINDIR}/test_testlib
 
-testlib.dll: testlib.o
-	${CC} ${CFLAGS} -fPIC -shared -o $@ testlib.c
-
-attach: testlib.dll
-	${CC} ${CFLAGS} test_testlib_dll.c -L./ 
-
-test_dll: dll attach
+.PHONY: clean
 
 clean:
-	rm -r *.o
+	rm -r ${OBJDIR}/*.o
